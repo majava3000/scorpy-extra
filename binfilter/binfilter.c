@@ -35,9 +35,6 @@ int main(int argc, char** argv) {
 
     Change16 buffer;
     size_t readCount = fread(&buffer, sizeof(buffer), 1, in);
-    unsigned counter = 0;
-    // uint16_t mask = (1 << 1);
-    // uint16_t mask = 0xFFFFU; // pass-all testing
 
     long parsedMask = strtol(argv[2], NULL, 0);
     assert(parsedMask >= 0 && parsedMask <= 0xFFFFU);
@@ -53,7 +50,6 @@ int main(int argc, char** argv) {
     while (readCount == 1) {
         buffer.data = buffer.data & mask;
         if (buffer.data != prevData) {
-            // printf("%4u: %llu: 0x%04x\n", counter, (long long unsigned)buffer.ts, buffer.data);
             prevData = buffer.data;
 
             // writeout
@@ -66,12 +62,10 @@ int main(int argc, char** argv) {
         }
         // attempt to read the next one
         readCount = fread(&buffer, sizeof(buffer), 1, in);
-        counter += 1;
     }
     // if last entry was filtered, we need to emit the last entry to guarantee
     // the proper total length of the data (we keep the data length)
     if (wasFiltered) {
-        // printf("%4u: %llu: 0x%04x\n", counter, (long long unsigned)buffer.ts, buffer.data);
         size_t writeCount = fwrite(&buffer, sizeof(buffer), 1, out);
         assert(writeCount == 1);
     }
